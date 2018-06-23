@@ -1,17 +1,7 @@
-##Disclaimer
+## Disclaimer
+Neither this Open Source project nor the author Twometer are related to WhatsApp or Facebook in any way.
 
-This Open Source project is in no way related to Whatsapp or Facebook, it's just a sample application for chats based on an universally recognized interface for faster understending of its functionalities.
+## Twometer FakeChats...
+...is an application to create fake WhatsApp chats that look real.
 
-##Android Chat Starter (Original description)
-
-A sample Android App which can be used as a starter application for a chat application.
-
-###What it includes?
-
-* Native Emoji Keyboard - Same as found in WhatsApp
-* Chat bubbles - Modeled after WhatsApp
-
-###Screenshots
-
-<img src="https://github.com/DeromirNeves/whatsapp-android/blob/gh-pages/chat1.png"/>
-<img src="https://github.com/DeromirNeves/whatsapp-android/blob/gh-pages/chat2.png"/>
+I am creating this application because all apps on Google Play that can do this are either very bad, have a lot of ads, or look like the WhatsApp from 2014.
