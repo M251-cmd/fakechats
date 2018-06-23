@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,6 +36,7 @@ public class ChatActivity extends AppCompatActivity {
     private ChatListAdapter chatListAdapter;
 
     private ContactData currentContactData;
+    private MessageSender currentSender = MessageSender.SELF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,19 +56,57 @@ public class ChatActivity extends AppCompatActivity {
         chatButtonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendMessage(chatInputView.getText().toString(), MessageSender.SELF);
+                sendMessage(chatInputView.getText().toString(), currentSender);
                 chatInputView.setText("");
             }
         });
+
+        final ImageView sideSwitchButton = findViewById(R.id.sideSwitchButton);
+        sideSwitchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentSender = currentSender.invert();
+                if (currentSender == MessageSender.SELF)
+                    sideSwitchButton.setImageResource(R.drawable.switcher_self);
+                else if (currentSender == MessageSender.OTHER)
+                    sideSwitchButton.setImageResource(R.drawable.switcher_other);
+            }
+        });
+
+        final ImageView attachButton = findViewById(R.id.attachButton);
+        final ImageView photoButton = findViewById(R.id.camButton);
+
 
         chatInputView.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (chatInputView.getText().toString().trim().length() > 0) {
                     chatButtonSend.setImageResource(R.drawable.input_send);
+                    attachButton.setVisibility(View.GONE);
+                    photoButton.setVisibility(View.GONE);
+                    sideSwitchButton.setVisibility(View.VISIBLE);
                 } else {
                     chatButtonSend.setImageResource(R.drawable.input_mic_white);
+                    attachButton.setVisibility(View.VISIBLE);
+                    photoButton.setVisibility(View.VISIBLE);
+                    sideSwitchButton.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final ChatMessage message = chatMessages.get(position);
+                MessageDataDialog dialog = new MessageDataDialog(ChatActivity.this);
+                dialog.setMessageState(message.getMessageState());
+                dialog.show(new DialogCallback<MessageState>() {
+                    @Override
+                    public void onResult(MessageState result) {
+                        message.setMessageState(result);
+                        chatListAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         });
 
@@ -77,28 +117,11 @@ public class ChatActivity extends AppCompatActivity {
         if (content.trim().length() == 0)
             return;
 
-        final ChatMessage message = new ChatMessage(content, sender, MessageState.SENT, System.currentTimeMillis());
+        final ChatMessage message = new ChatMessage(content, sender, MessageState.SEEN, System.currentTimeMillis());
         chatMessages.add(message);
 
         if (chatListAdapter != null)
             chatListAdapter.notifyDataSetChanged();
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                message.setMessageState(MessageState.DELIVERED);
-                chatMessages.add(new ChatMessage(content, MessageSender.OTHER, MessageState.SENT, System.currentTimeMillis()));
-                chatListAdapter.notifyDataSetChanged();
-            }
-        }, 1000);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                message.setMessageState(MessageState.SEEN);
-                chatListAdapter.notifyDataSetChanged();
-            }
-        }, 2000);
     }
 
     private void initActionBar() {
@@ -138,11 +161,11 @@ public class ChatActivity extends AppCompatActivity {
                             currentContactData = result;
                             contactName.setText(currentContactData.getName());
                             contactState.setText(currentContactData.getLastSeenState());
-                            if(chatMessages.get(0).getSender() == MessageSender.SYSTEM_UNKNOWN_NUMBER){
+                            if (chatMessages.get(0).getSender() == MessageSender.SYSTEM_UNKNOWN_NUMBER) {
                                 chatMessages.remove(0);
                                 chatListAdapter.notifyDataSetChanged();
                             }
-                            if(Utils.isPhoneNumber(currentContactData.getName())){
+                            if (Utils.isPhoneNumber(currentContactData.getName())) {
 
                                 chatMessages.add(0, new ChatMessage("", MessageSender.SYSTEM_UNKNOWN_NUMBER));
                                 chatListAdapter.notifyDataSetChanged();

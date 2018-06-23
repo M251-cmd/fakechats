@@ -16,5 +16,9 @@
     <string name="cancel">Abbrechen</string>
     <string name="block">Blockieren</string>
     <string name="add">Hinzufügen</string>
+    <string name="state_seen">Gelesen</string>
+    <string name="state_delivered">Zugestellt</string>
+    <string name="state_sent">Gesendet</string>
+    <string name="message_data_title">Nachrichtenstatus</string>
 
 </resources>

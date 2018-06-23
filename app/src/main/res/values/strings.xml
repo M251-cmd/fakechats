@@ -16,5 +16,9 @@
     <string name="cancel">Cancel</string>
     <string name="block">Block</string>
     <string name="add">Add</string>
+    <string name="state_seen">Seen</string>
+    <string name="state_delivered">Delivered</string>
+    <string name="state_sent">Sent</string>
+    <string name="message_data_title">Message state</string>
 
 </resources>

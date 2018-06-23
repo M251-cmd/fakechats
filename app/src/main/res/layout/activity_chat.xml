@@ -90,6 +90,14 @@
                     android:layout_gravity="bottom"
                     android:src="@drawable/ib_camera" />
 
+                <ImageView
+                    android:id="@+id/sideSwitchButton"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="bottom"
+                    android:src="@drawable/switcher_self"
+                    android:visibility="gone" />
+
             </LinearLayout>
 
             <ImageButton
