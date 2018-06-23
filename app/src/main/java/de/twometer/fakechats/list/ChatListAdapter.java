@@ -9,9 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import de.twometer.fakechats.R;
 import de.twometer.fakechats.model.ChatMessage;
@@ -20,16 +19,17 @@ import de.twometer.fakechats.model.MessageState;
 
 public class ChatListAdapter extends BaseAdapter {
 
-    private static final String OTHER_NBSP = " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;";
-    private static final String SELF_NBSP = " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;";
+    private static final String OTHER_NBSP = " &#160;&#160;&#160;&#160;&#160;";
+    private static final String SELF_NBSP = " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;";
 
     private ArrayList<ChatMessage> chatMessages;
     private Context context;
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("h:mm a", Locale.US);
+    private DateFormat dateFormat;
 
     public ChatListAdapter(Context context, ArrayList<ChatMessage> chatMessages) {
         this.context = context;
         this.chatMessages = chatMessages;
+        this.dateFormat = android.text.format.DateFormat.getTimeFormat(context);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class ChatListAdapter extends BaseAdapter {
                 viewHolder = (ViewHolderOther) messageView.getTag();
             }
 
-            viewHolder.getTextView().setText(Html.fromHtml(Html.escapeHtml(message.getContent()) + OTHER_NBSP));
-            viewHolder.getTimeView().setText(SIMPLE_DATE_FORMAT.format(message.getSentTime()));
+            viewHolder.getTextView().setText(Html.fromHtml(Html.escapeHtml(message.getContent()) + buildNbspString(OTHER_NBSP, message.getSentTime())));
+            viewHolder.getTimeView().setText(dateFormat.format(message.getSentTime()));
         } else if (message.getSender() == MessageSender.SELF) {
             ViewHolderSelf viewHolder;
             if (convertView == null) {
@@ -81,8 +81,8 @@ public class ChatListAdapter extends BaseAdapter {
                 viewHolder = (ViewHolderSelf) messageView.getTag();
             }
 
-            viewHolder.getTextView().setText(Html.fromHtml(message.getContent() + SELF_NBSP));
-            viewHolder.getTimeView().setText(SIMPLE_DATE_FORMAT.format(message.getSentTime()));
+            viewHolder.getTextView().setText(Html.fromHtml(message.getContent() + buildNbspString(SELF_NBSP, message.getSentTime())));
+            viewHolder.getTimeView().setText(dateFormat.format(message.getSentTime()));
 
             if (message.getMessageState() == MessageState.SENT) {
                 viewHolder.getStatusView().setImageDrawable(context.getResources().getDrawable(R.drawable.message_got_receipt_from_server));
@@ -104,5 +104,14 @@ public class ChatListAdapter extends BaseAdapter {
     @Override
     public int getItemViewType(int position) {
         return chatMessages.get(position).getSender().ordinal();
+    }
+
+    private String buildNbspString(String base, long time) {
+        int append = dateFormat.format(time).length();
+        StringBuilder baseBuilder = new StringBuilder(base);
+        for (int i = 0; i < append; i++)
+            baseBuilder.append("&#160;");
+        base = baseBuilder.toString();
+        return base;
     }
 }

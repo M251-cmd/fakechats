@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -46,12 +48,33 @@ public class MainActivity extends AppCompatActivity {
         chatListView.setAdapter(chatListAdapter);
 
         final EditText chatInputView = findViewById(R.id.chat_input_view);
-        ImageView chatButtonSend = findViewById(R.id.chat_button_send);
+        final ImageView chatButtonSend = findViewById(R.id.chat_button_send);
         chatButtonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendMessage(chatInputView.getText().toString(), MessageSender.SELF);
                 chatInputView.setText("");
+            }
+        });
+
+        chatInputView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (chatInputView.getText().toString().trim().length() > 0) {
+                    chatButtonSend.setImageResource(R.drawable.input_send);
+                } else {
+                    chatButtonSend.setImageResource(R.drawable.input_mic_white);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
@@ -97,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
             ImageView v = customView.findViewById(R.id.contactImage);
             v.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_contact)));
             actionBar.setCustomView(customView);
-            Toolbar parent =(Toolbar) customView.getParent();
-            parent.setPadding(0,0,0,0);//for tab otherwise give space in tab
-            parent.setContentInsetsAbsolute(0,0);
+            Toolbar parent = (Toolbar) customView.getParent();
+            parent.setPadding(0, 0, 0, 0);//for tab otherwise give space in tab
+            parent.setContentInsetsAbsolute(0, 0);
 
         }
     }
