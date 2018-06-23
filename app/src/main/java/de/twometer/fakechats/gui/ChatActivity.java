@@ -43,7 +43,7 @@ public class ChatActivity extends AppCompatActivity {
 
         handler = new Handler(getMainLooper());
 
-        chatMessages.add(new ChatMessage(getString(R.string.today)));
+        chatMessages.add(new ChatMessage(getString(R.string.today), MessageSender.SYSTEM_DATE));
 
         ListView chatListView = findViewById(R.id.chat_list_view);
         chatListAdapter = new ChatListAdapter(this, chatMessages);
@@ -138,6 +138,15 @@ public class ChatActivity extends AppCompatActivity {
                             currentContactData = result;
                             contactName.setText(currentContactData.getName());
                             contactState.setText(currentContactData.getLastSeenState());
+                            if(chatMessages.get(0).getSender() == MessageSender.SYSTEM_UNKNOWN_NUMBER){
+                                chatMessages.remove(0);
+                                chatListAdapter.notifyDataSetChanged();
+                            }
+                            if(Utils.isPhoneNumber(currentContactData.getName())){
+
+                                chatMessages.add(0, new ChatMessage("", MessageSender.SYSTEM_UNKNOWN_NUMBER));
+                                chatListAdapter.notifyDataSetChanged();
+                            }
                         }
                     });
                 }

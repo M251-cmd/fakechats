@@ -7,9 +7,9 @@ public class ChatMessage {
     private MessageState messageState;
     private long sentTime;
 
-    public ChatMessage(String content) {
+    public ChatMessage(String content, MessageSender sender) {
         this.content = content;
-        this.sender = MessageSender.SYSTEM;
+        this.sender = sender;
     }
 
     public ChatMessage(String content, MessageSender sender, MessageState messageState, long sentTime) {

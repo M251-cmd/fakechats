@@ -28,4 +28,13 @@ public class Utils {
         return output;
     }
 
+    public static boolean isPhoneNumber(String str) {
+        if (str.startsWith("+")) {
+            for (int i = 1; i < str.length(); i++)
+                if (str.charAt(i) != ' ' && !Character.isDigit(str.charAt(i))) return false;
+            return true;
+        }
+        return false;
+    }
+
 }

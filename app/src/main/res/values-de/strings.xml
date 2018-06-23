@@ -9,5 +9,12 @@
     <string name="last_seen_default">zuletzt online heute 08:00</string>
     <string name="contact_default">Neuer Kontakt</string>
     <string name="today">Heute</string>
+    <string name="contact_name_placeholder">Kontaktname</string>
+    <string name="contact_state_placeholder">Kontaktstatus</string>
+    <string name="contact_data_title">Kontaktdaten</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="block">Blockieren</string>
+    <string name="add">Hinzufügen</string>
 
 </resources>
