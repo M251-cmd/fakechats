@@ -1,33 +1,28 @@
 package de.twometer.fakechats.gui;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import de.twometer.fakechats.R;
 import de.twometer.fakechats.list.ChatListAdapter;
 import de.twometer.fakechats.model.ChatMessage;
+import de.twometer.fakechats.model.ContactData;
 import de.twometer.fakechats.model.MessageSender;
 import de.twometer.fakechats.model.MessageState;
+import de.twometer.fakechats.util.DialogCallback;
 import de.twometer.fakechats.util.TextWatcherAdapter;
 import de.twometer.fakechats.util.Utils;
 
@@ -39,12 +34,16 @@ public class ChatActivity extends AppCompatActivity {
     private Handler handler;
     private ChatListAdapter chatListAdapter;
 
+    private ContactData currentContactData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
         handler = new Handler(getMainLooper());
+
+        chatMessages.add(new ChatMessage(getString(R.string.today)));
 
         ListView chatListView = findViewById(R.id.chat_list_view);
         chatListAdapter = new ChatListAdapter(this, chatMessages);
@@ -110,8 +109,10 @@ public class ChatActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
             View customView = View.inflate(actionBar.getThemedContext(), R.layout.chat_action_bar, null);
+
             ImageView contactImage = customView.findViewById(R.id.contactImage);
             contactImage.setImageBitmap(Utils.cropToCircle(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_contact)));
+
             LinearLayout backButton = customView.findViewById(R.id.backButtonClickable);
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,7 +120,31 @@ public class ChatActivity extends AppCompatActivity {
                     finish();
                 }
             });
+
+            final TextView contactName = customView.findViewById(R.id.actionbarTitle);
+            final TextView contactState = customView.findViewById(R.id.actionbarSubtitle);
+
+            currentContactData = new ContactData(contactName.getText().toString(), contactState.getText().toString());
+
+            LinearLayout contactDataButton = customView.findViewById(R.id.contactInfoClickable);
+            contactDataButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContactDataDialog dialog = new ContactDataDialog(ChatActivity.this);
+                    dialog.setContactData(currentContactData);
+                    dialog.show(new DialogCallback<ContactData>() {
+                        @Override
+                        public void onResult(ContactData result) {
+                            currentContactData = result;
+                            contactName.setText(currentContactData.getName());
+                            contactState.setText(currentContactData.getLastSeenState());
+                        }
+                    });
+                }
+            });
+
             actionBar.setCustomView(customView);
+
             Toolbar parent = (Toolbar) customView.getParent();
             parent.setPadding(0, 0, 0, 0);
             parent.setContentInsetsAbsolute(0, 0);

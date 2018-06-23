@@ -91,6 +91,18 @@ public class ChatListAdapter extends BaseAdapter {
             } else if (message.getMessageState() == MessageState.SEEN) {
                 viewHolder.getStatusView().setImageDrawable(context.getResources().getDrawable(R.drawable.message_got_read_receipt_from_target));
             }
+        } else if (message.getSender() == MessageSender.SYSTEM) {
+            ViewHolderSystem viewHolder;
+            if (convertView == null) {
+                messageView = LayoutInflater.from(context).inflate(R.layout.chat_item_date, null, false);
+                TextView textView = messageView.findViewById(R.id.system_message);
+                viewHolder = new ViewHolderSystem(textView);
+                messageView.setTag(viewHolder);
+            } else {
+                messageView = convertView;
+                viewHolder = (ViewHolderSystem) messageView.getTag();
+            }
+            viewHolder.getTextView().setText(message.getContent());
         }
 
         return messageView;
@@ -98,7 +110,7 @@ public class ChatListAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return 3;
     }
 
     @Override
