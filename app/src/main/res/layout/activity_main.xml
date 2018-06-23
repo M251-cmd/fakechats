@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
-    tools:context=".MainActivity">
+    tools:context="de.twometer.fakechats.gui.MainActivity">
 
     <ListView
         android:id="@+id/chat_list_view"
@@ -52,7 +52,7 @@
                 android:src="@drawable/input_emoji"/>
 
             <EditText
-                android:id="@+id/chat_edit_text1"
+                android:id="@+id/chat_input_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -67,7 +67,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/enter_chat1"
+            android:id="@+id/chat_button_send"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="bottom"
