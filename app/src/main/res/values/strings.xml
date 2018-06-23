@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Chat Starter</string>
-    <string name="type_your_message">Type a message</string>
-    <string name="NoRecent">No recent</string>
+    <string name="app_name">Fakechats</string>
+    <string name="message_placeholder">Type a message</string>
+    <string name="video_call">Video call</string>
+    <string name="audio_call">Voice call</string>
+    <string name="settings">Settings</string>
+    <string name="last_seen_default">last seen today 08:00</string>
+    <string name="contact_default">New contact</string>
 
 </resources>
