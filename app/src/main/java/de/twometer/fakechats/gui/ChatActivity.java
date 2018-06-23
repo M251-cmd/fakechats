@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -27,9 +28,11 @@ import de.twometer.fakechats.list.ChatListAdapter;
 import de.twometer.fakechats.model.ChatMessage;
 import de.twometer.fakechats.model.MessageSender;
 import de.twometer.fakechats.model.MessageState;
+import de.twometer.fakechats.util.TextWatcherAdapter;
+import de.twometer.fakechats.util.Utils;
 
 
-public class MainActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
     private ArrayList<ChatMessage> chatMessages = new ArrayList<>();
 
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chat);
 
         handler = new Handler(getMainLooper());
 
@@ -57,12 +60,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        chatInputView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+        chatInputView.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (chatInputView.getText().toString().trim().length() > 0) {
@@ -70,11 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     chatButtonSend.setImageResource(R.drawable.input_mic_white);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
             }
         });
 
@@ -117,36 +110,20 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(false);
             actionBar.setDisplayShowCustomEnabled(true);
             View customView = View.inflate(actionBar.getThemedContext(), R.layout.chat_action_bar, null);
-            ImageView v = customView.findViewById(R.id.contactImage);
-            v.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_contact)));
+            ImageView contactImage = customView.findViewById(R.id.contactImage);
+            contactImage.setImageBitmap(Utils.cropToCircle(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_contact)));
+            LinearLayout backButton = customView.findViewById(R.id.backButtonClickable);
+            backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
             actionBar.setCustomView(customView);
             Toolbar parent = (Toolbar) customView.getParent();
-            parent.setPadding(0, 0, 0, 0);//for tab otherwise give space in tab
+            parent.setPadding(0, 0, 0, 0);
             parent.setContentInsetsAbsolute(0, 0);
-
         }
-    }
-
-    public Bitmap getCroppedBitmap(Bitmap bitmap) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
-                bitmap.getWidth() / 2, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-        //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
-        //return _bmp;
-        return output;
     }
 
     @Override
