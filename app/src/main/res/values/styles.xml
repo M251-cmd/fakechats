@@ -1,6 +1,9 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#075E55</item>
+        <item name="colorPrimaryDark">#054C44</item>
+        <item name="colorAccent">#20C65A</item>
     </style>
 
     <style name="chat_text_message_style">

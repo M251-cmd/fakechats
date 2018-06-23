@@ -71,7 +71,7 @@ public class ChatListAdapter extends BaseAdapter {
 
             holder1.messageTextView.setText(Html.fromHtml(Emoji.replaceEmoji(message.getMessageText(),
                     holder1.messageTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(16))
-                    + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
+                    + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
             holder1.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
         } else if (message.getUserType() == UserType.OTHER) {
@@ -96,18 +96,14 @@ public class ChatListAdapter extends BaseAdapter {
             holder2.messageTextView.setText(Html.fromHtml(Emoji.replaceEmoji(message.getMessageText(),
                     holder2.messageTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(16))
                     + " &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;" +
-                    "&#160;&#160;&#160;&#160;&#160;&#160;&#160;"));
-            //holder2.messageTextView.setText(message.getMessageText());
+                    "&#160;&#160;&#160;&#160;&#160;&#160;"));
             holder2.timeTextView.setText(SIMPLE_DATE_FORMAT.format(message.getMessageTime()));
 
             if (message.getMessageStatus() == Status.DELIVERED) {
                 holder2.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.message_got_receipt_from_target));
             } else if (message.getMessageStatus() == Status.SENT) {
                 holder2.messageStatus.setImageDrawable(context.getResources().getDrawable(R.drawable.message_got_receipt_from_server));
-
             }
-
-
         }
 
 
