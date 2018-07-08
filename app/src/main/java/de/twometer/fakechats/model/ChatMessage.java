@@ -1,6 +1,8 @@
 package de.twometer.fakechats.model;
 
-public class ChatMessage {
+import java.io.Serializable;
+
+public class ChatMessage implements Serializable {
 
     private String content;
     private MessageSender sender;

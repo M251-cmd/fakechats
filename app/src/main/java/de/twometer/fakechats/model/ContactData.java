@@ -1,6 +1,8 @@
 package de.twometer.fakechats.model;
 
-public class ContactData {
+import java.io.Serializable;
+
+public class ContactData implements Serializable {
 
     private String name;
     private String lastSeenState;

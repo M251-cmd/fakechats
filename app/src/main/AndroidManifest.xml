@@ -8,10 +8,15 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="de.twometer.fakechats.gui.ChatActivity"
-            android:label="@string/app_name">
+            android:name=".gui.ChatActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".gui.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

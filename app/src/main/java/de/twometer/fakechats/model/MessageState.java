@@ -1,6 +1,8 @@
 package de.twometer.fakechats.model;
 
-public enum MessageState {
+import java.io.Serializable;
+
+public enum MessageState implements Serializable {
     SENT,
     DELIVERED,
     SEEN

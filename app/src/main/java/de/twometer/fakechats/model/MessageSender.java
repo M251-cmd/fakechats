@@ -1,6 +1,8 @@
 package de.twometer.fakechats.model;
 
-public enum MessageSender {
+import java.io.Serializable;
+
+public enum MessageSender implements Serializable {
     OTHER,
     SELF,
     SYSTEM_DATE,

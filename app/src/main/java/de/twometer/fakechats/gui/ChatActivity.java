@@ -23,6 +23,7 @@ import de.twometer.fakechats.model.ChatMessage;
 import de.twometer.fakechats.model.ContactData;
 import de.twometer.fakechats.model.MessageSender;
 import de.twometer.fakechats.model.MessageState;
+import de.twometer.fakechats.save.SaveState;
 import de.twometer.fakechats.util.DialogCallback;
 import de.twometer.fakechats.util.TextWatcherAdapter;
 import de.twometer.fakechats.util.Utils;
@@ -32,18 +33,28 @@ public class ChatActivity extends AppCompatActivity {
 
     private ArrayList<ChatMessage> chatMessages = new ArrayList<>();
 
-    private Handler handler;
     private ChatListAdapter chatListAdapter;
 
     private ContactData currentContactData;
     private MessageSender currentSender = MessageSender.SELF;
+
+    private TextView contactName;
+    private TextView contactState;
+
+    private SaveState.Chat chat;
+
+    public static final String EXTRA_IDENTIFIER = "fakechats.extra.id";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        handler = new Handler(getMainLooper());
+        int id = getIntent().getIntExtra(EXTRA_IDENTIFIER, -1);
+        if (id == -1) {
+            finish();
+            return;
+        }
 
         chatMessages.add(new ChatMessage(getString(R.string.today), MessageSender.SYSTEM_DATE));
 
@@ -76,7 +87,6 @@ public class ChatActivity extends AppCompatActivity {
         final ImageView attachButton = findViewById(R.id.attachButton);
         final ImageView photoButton = findViewById(R.id.camButton);
 
-
         chatInputView.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -105,12 +115,24 @@ public class ChatActivity extends AppCompatActivity {
                     public void onResult(MessageState result) {
                         message.setMessageState(result);
                         chatListAdapter.notifyDataSetChanged();
+                        SaveState.save();
                     }
                 });
             }
         });
 
         initActionBar();
+
+        //// Loading data ////
+        System.out.println("Loading chat " + id);
+        chat = SaveState.getChat(id);
+        setCurrentContactData(chat.data);
+
+        for (SaveState.Message msg : chat.messages) chatMessages.add(msg.chatMessage);
+
+        if (chatListAdapter != null)
+            chatListAdapter.notifyDataSetChanged();
+
     }
 
     private void sendMessage(final String content, final MessageSender sender) {
@@ -119,6 +141,7 @@ public class ChatActivity extends AppCompatActivity {
 
         final ChatMessage message = new ChatMessage(content, sender, MessageState.SEEN, System.currentTimeMillis());
         chatMessages.add(message);
+        SaveState.createMessage(chat.id, message);
 
         if (chatListAdapter != null)
             chatListAdapter.notifyDataSetChanged();
@@ -144,8 +167,8 @@ public class ChatActivity extends AppCompatActivity {
                 }
             });
 
-            final TextView contactName = customView.findViewById(R.id.actionbarTitle);
-            final TextView contactState = customView.findViewById(R.id.actionbarSubtitle);
+            contactName = customView.findViewById(R.id.actionbarTitle);
+            contactState = customView.findViewById(R.id.actionbarSubtitle);
 
             currentContactData = new ContactData(contactName.getText().toString(), contactState.getText().toString());
 
@@ -158,18 +181,9 @@ public class ChatActivity extends AppCompatActivity {
                     dialog.show(new DialogCallback<ContactData>() {
                         @Override
                         public void onResult(ContactData result) {
-                            currentContactData = result;
-                            contactName.setText(currentContactData.getName());
-                            contactState.setText(currentContactData.getLastSeenState());
-                            if (chatMessages.get(0).getSender() == MessageSender.SYSTEM_UNKNOWN_NUMBER) {
-                                chatMessages.remove(0);
-                                chatListAdapter.notifyDataSetChanged();
-                            }
-                            if (Utils.isPhoneNumber(currentContactData.getName())) {
-
-                                chatMessages.add(0, new ChatMessage("", MessageSender.SYSTEM_UNKNOWN_NUMBER));
-                                chatListAdapter.notifyDataSetChanged();
-                            }
+                            setCurrentContactData(result);
+                            chat.data = result;
+                            SaveState.save();
                         }
                     });
                 }
@@ -180,6 +194,20 @@ public class ChatActivity extends AppCompatActivity {
             Toolbar parent = (Toolbar) customView.getParent();
             parent.setPadding(0, 0, 0, 0);
             parent.setContentInsetsAbsolute(0, 0);
+        }
+    }
+
+    public void setCurrentContactData(ContactData currentContactData) {
+        this.currentContactData = currentContactData;
+        contactName.setText(currentContactData.getName());
+        contactState.setText(currentContactData.getLastSeenState());
+        if (chatMessages.get(0).getSender() == MessageSender.SYSTEM_UNKNOWN_NUMBER) {
+            chatMessages.remove(0);
+            chatListAdapter.notifyDataSetChanged();
+        }
+        if (Utils.isPhoneNumber(currentContactData.getName())) {
+            chatMessages.add(0, new ChatMessage("", MessageSender.SYSTEM_UNKNOWN_NUMBER));
+            chatListAdapter.notifyDataSetChanged();
         }
     }
 
